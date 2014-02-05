@@ -5,7 +5,7 @@ flight-booking-c
 
 This is an application which manages the flight reservations of an airline company.
 
-v0.2 (in improvement before stable 1.0)
+v0.2 (APPLICATION IS WORKING - in code improvement before 1.0)
 
 Author: Mário Diogo Silva
 
