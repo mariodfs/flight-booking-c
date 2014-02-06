@@ -2,7 +2,7 @@
  * File:   lista_ligada_dupla.h
  * Author: mariodiogosilva
  *
- * Created on February 4, 2014, 5:03 PM
+ * Created in 2009, modified in 2014
  */
 
 #ifndef LISTA_LIGADA_DUPLA_H
@@ -11,7 +11,7 @@
 #ifdef	__cplusplus
 extern "C" {
 #endif
-    
+
 #include "estruturas.h"
 
     List_c cria_lista_cliente(void);
@@ -72,6 +72,8 @@ extern "C" {
     int quick_sort(Cliente* x[], int li, int ls);
 
     int data_test(List_v *actual, int dia, int mes, int ano);
+    int le_int_teclado(int* num, int tamanho);
+    int le_string_teclado(char* str, int tamanho);
 
 #ifdef	__cplusplus
 }

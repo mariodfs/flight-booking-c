@@ -744,4 +744,33 @@ int data_test(List_v *actual, int dia, int mes, int ano) {
     return 0;
 }
 
+// READ INT FROM KEYBOARD
+int le_int_teclado(int* num, int tamanho) {
+    char* p;
+    char linha[tamanho];
+
+    if (fgets(linha, tamanho, stdin) != NULL) {
+        if ((p = strchr(linha, '\n')) != NULL)
+            *p = '\0';
+        sscanf(linha, "%d", num);
+        return EXIT_SUCCESS;
+    } else
+        return EXIT_FAILURE;
+}
+
+// READ STRING FROM KEYBOARD
+int le_string_teclado(char* str, int tamanho) {
+    char* p;
+    char linha[tamanho];
+
+    if (fgets(linha, tamanho, stdin) != NULL) {
+        if ((p = strchr(linha, '\n')) != NULL)
+            *p = '\0';
+        strcpy(str, linha);
+        return EXIT_SUCCESS;
+    } else
+        return EXIT_FAILURE;
+}
+
+
 

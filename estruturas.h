@@ -1,8 +1,8 @@
 /* 
- * File:   Estruturas.h
+ * File:   estruturas.h
  * Author: mariodiogosilva
  *
- * Created on February 4, 2014, 3:34 PM
+ * Created in 2009, modified in 2014
  */
 
 #ifndef ESTRUTURAS_H

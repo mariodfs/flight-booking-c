@@ -1,6 +1,6 @@
 /* 
  * File:   main.c
- * Author: Mário Diogo Silva
+ * Author: mariodiogosilva
  *
  * Created in 2009, modified in 2014
  */
@@ -14,13 +14,46 @@
 #define BUFSIZE 32
 
 int main(int argc, char** argv) {
-    List_c lista_de_clientes = cria_lista_cliente();
-    List_v lista_de_voos = cria_lista_voo();
-    List_r lista_de_reservas = cria_lista_reserva();
 
+    // ALL INTERNAL DATA
+    List_c lista_de_clientes = cria_lista_cliente();
+    List_c cliente_actual;
+    List_v lista_de_voos = cria_lista_voo();
+    List_v voo_actual;
+    List_r lista_de_reservas = cria_lista_reserva();
+    List_r reserva_actual;
+    char string_test[BUFSIZE];
+    char nome[33];
+    char morada[33];
+    char e_mail[33];
+    char origem[25];
+    char destino[25];
+    char cidadeC[25] = "Cernache";
+    char cidadeL[25] = "Lisboa";
+    unsigned long long telefone;
+    int number_cliente;
+    int number_voo;
+    int number_reserva;
+    int dia_voo;
+    int mes_voo;
+    int ano_voo;
+    int hora_voo;
+    int minutos_voo;
+    int dia_reserva;
+    int mes_reserva;
+    int ano_reserva;
+    int hora_reserva;
+    int minutos_reserva;
+    int lugar_voo;
+    int test = 0;
+    int viagem;
+    int voo_efectuado = 0;
+    int escritos;
+    int opcao;
     int n_cliente = 1;
     int n_voo = 1;
     int n_reserva = 1;
+    //
 
     /*
      * DEBUG VERSION - INITIAL DATA READ
@@ -56,27 +89,6 @@ int main(int argc, char** argv) {
     le_voos("voos", lista_de_voos);
     le_reservas("reservas", lista_de_reservas);
 
-    char string_test[BUFSIZE];
-    char nome[33];
-    char morada[33];
-    char e_mail[33];
-    char origem[25];
-    char destino[25];
-    char cidadeC[25] = "Cernache";
-    char cidadeL[25] = "Lisboa";
-    unsigned long long telefone;
-    int number_cliente;
-    int number_voo;
-    int number_reserva;
-    int dia_voo, mes_voo, ano_voo, hora_voo, minutos_voo;
-    int dia_reserva, mes_reserva, ano_reserva, hora_reserva, minutos_reserva, lugar_voo;
-    int test = 0;
-    int viagem;
-    int voo_efectuado = 0;
-    int escritos;
-    char* p;
-
-    int opcao;
     do {
         if (lista_de_clientes->cliente.n_cliente == 0) n_cliente = 1;
         if (lista_de_voos->voo.n_voo == 0) n_voo = 1;
@@ -88,8 +100,7 @@ int main(int argc, char** argv) {
             printf("   1 - Criar/eliminar/visualizar clientes;\n   2 - Criar/eliminar/visualizar voos;\n   3 - Criar/eliminar/visualizar reservas;\n\
    4 - Visionar lista ordenada de passageiros por nome;\n   5 - Visionar lista ordenada de passageiros por n. de voos efectuados;\n\
    6 - Verificar se um passageiro tem reserva num voo;\n   7 - Sair;\n\n   Opcao: ");
-            fgets(string_test, sizeof (string_test), stdin);
-            sscanf(string_test, "%d", &opcao);
+            le_int_teclado(&opcao, BUFSIZE);
         } while (opcao < 1 || opcao > 7);
 
         if (opcao == 1) {
@@ -97,29 +108,16 @@ int main(int argc, char** argv) {
                 opcao = 8;
                 printf("\n   ******** GCC-Airlines ********\n\n   Gestao de Reservas - Criar/eliminar/verificar clientes\n\n");
                 printf("   1 - Criar Cliente;\n   2 - Eliminar Cliente;\n   3 - Visualizar clientes;\n   4 - Voltar ao menu anterior;\n   7 - Sair;\n\n   Opcao: ");
-                fgets(string_test, sizeof (string_test), stdin);
-                sscanf(string_test, "%d", &opcao);
+                le_int_teclado(&opcao, BUFSIZE);
             } while (opcao < 1 || opcao > 7 || opcao == 5 || opcao == 6);
 
             if (opcao == 1) {
                 printf("\n   Nome do cliente ( max. %lu caracteres): ", sizeof (string_test));
-                if (fgets(string_test, sizeof (string_test), stdin) != NULL) {
-                    if ((p = strchr(string_test, '\n')) != NULL)
-                        *p = '\0';
-                    strcpy(nome, string_test);
-                }
+                le_string_teclado(nome, BUFSIZE);
                 printf("\n   Morada do cliente ( max. %lu caracteres): ", sizeof (string_test));
-                if (fgets(string_test, sizeof (string_test), stdin) != NULL) {
-                    if ((p = strchr(string_test, '\n')) != NULL)
-                        *p = '\0';
-                    strcpy(morada, string_test);
-                }
+                le_string_teclado(morada, BUFSIZE);
                 printf("\n   E_mail do cliente ( max. %lu caracteres): ", sizeof (string_test));
-                if (fgets(string_test, sizeof (string_test), stdin) != NULL) {
-                    if ((p = strchr(string_test, '\n')) != NULL)
-                        *p = '\0';
-                    strcpy(e_mail, string_test);
-                }
+                le_string_teclado(e_mail, BUFSIZE);
                 printf("\n   Telefone do cliente: ");
                 fgets(string_test, sizeof (string_test), stdin);
                 sscanf(string_test, "%llu", &telefone);
@@ -148,11 +146,10 @@ int main(int argc, char** argv) {
 
             } else if (opcao == 2) {
                 printf("\n   Numero do cliente( Para voltar ao menu anterior inserir -1): ");
-                fgets(string_test, sizeof (string_test), stdin);
-                sscanf(string_test, "%d", &number_cliente);
-                List_r reserva_actual = pesquisa_reserva_numero_cliente(lista_de_reservas, number_cliente);
+                le_int_teclado(&number_cliente, BUFSIZE);
+                reserva_actual = pesquisa_reserva_numero_cliente(lista_de_reservas, number_cliente);
                 while (reserva_actual != NULL) {
-                    List_v voo_actual = pesquisa_voo_numero_voo(lista_de_voos, reserva_actual->reserva.n_voo);
+                    voo_actual = pesquisa_voo_numero_voo(lista_de_voos, reserva_actual->reserva.n_voo);
                     voo_actual->voo.n_lugares_vagos++;
                     voo_actual->voo.lugares_vagos[ reserva_actual->reserva.n_lugar - 1] = 1;
                     elimina_reserva_numero_cliente(lista_de_reservas, number_cliente);
@@ -197,7 +194,6 @@ int main(int argc, char** argv) {
                     escreve_clientes("clientes", &lista_de_clientes, lista_de_clientes->cliente.n_cliente);
                     escreve_voos("voos", &lista_de_voos, lista_de_voos->voo.n_voo);
                     escreve_reservas("reservas", &lista_de_reservas, lista_de_reservas->reserva.n_cliente);
-
                 }
                 test = 0;
 
@@ -210,42 +206,35 @@ int main(int argc, char** argv) {
                 opcao = 8;
                 printf("\n   ******** GCC-Airlines ********\n\n   Gestao de Reservas - Criar/eliminar/verificar voos\n\n");
                 printf("   1 - Criar Voo;\n   2 - Eliminar Voo;\n   3 - Visualizar voos;\n   4 - Voltar ao menu anterior;\n   7 - Sair;\n\n   Opcao: ");
-                fgets(string_test, sizeof (string_test), stdin);
-                sscanf(string_test, "%d", &opcao);
+                le_int_teclado(&opcao, BUFSIZE);
             } while (opcao < 1 || opcao > 7 || opcao == 5 || opcao == 6);
 
             if (opcao == 1) {
                 do {
                     printf("\n   Dia do voo: ");
-                    fgets(string_test, sizeof (string_test), stdin);
-                    sscanf(string_test, "%d", &dia_voo);
+                    le_int_teclado(&dia_voo, BUFSIZE);
                 } while (dia_voo < 1 || dia_voo > 31);
                 do {
                     printf("\n   Mes do voo: ");
-                    fgets(string_test, sizeof (string_test), stdin);
-                    sscanf(string_test, "%d", &mes_voo);
+                    le_int_teclado(&mes_voo, BUFSIZE);
                 } while (mes_voo < 1 || mes_voo > 12);
                 do {
                     printf("\n   Ano do voo( 2000-2100): ");
-                    fgets(string_test, sizeof (string_test), stdin);
-                    sscanf(string_test, "%d", &ano_voo);
+                    le_int_teclado(&ano_voo, BUFSIZE);
                 } while (ano_voo < 2000 || ano_voo > 2100);
                 printf("\n   Tempo de partida do voo\n");
                 do {
                     printf("\n      Hora( 0-23): ");
-                    fgets(string_test, sizeof (string_test), stdin);
-                    sscanf(string_test, "%d", &hora_voo);
+                    le_int_teclado(&hora_voo, BUFSIZE);
                 } while (hora_voo < 0 || hora_voo > 23);
                 do {
                     printf("\n      Minutos( 0-59): ");
-                    fgets(string_test, sizeof (string_test), stdin);
-                    sscanf(string_test, "%d", &minutos_voo);
+                    le_int_teclado(&minutos_voo, BUFSIZE);
                 } while (minutos_voo < 0 || minutos_voo > 59);
 
                 do {
                     printf("\n\n   Origem e destino do voo\n\n      1 - Origem: Lisboa - Destino: Cernache\n      2 - Origem: Cernache - Destino: Lisboa\n\n   Opcao: ");
-                    fgets(string_test, sizeof (string_test), stdin);
-                    sscanf(string_test, "%d", &viagem);
+                    le_int_teclado(&viagem, BUFSIZE);
                 } while (viagem < 1 || viagem > 2);
                 if (viagem == 1) {
                     strcpy(origem, cidadeL);
@@ -278,15 +267,12 @@ int main(int argc, char** argv) {
 
             } else if (opcao == 2) {
                 printf("\n   Numero do voo( Para voltar ao menu anterior inserir -1): ");
-                fgets(string_test, sizeof (string_test), stdin);
-                sscanf(string_test, "%d", &number_voo);
+                le_int_teclado(&number_voo, BUFSIZE);
                 do {
                     printf("\n   O voo foi efectuado?(  1 - Sim; 2 - Nao ): ");
-                    fgets(string_test, sizeof (string_test), stdin);
-                    sscanf(string_test, "%d", &voo_efectuado);
+                    le_int_teclado(&voo_efectuado, BUFSIZE);
                 } while (voo_efectuado < 1 || voo_efectuado > 2);
-                List_r reserva_actual = pesquisa_reserva_numero_voo(lista_de_reservas, number_voo);
-                List_c cliente_actual;
+                reserva_actual = pesquisa_reserva_numero_voo(lista_de_reservas, number_voo);
                 if (reserva_actual)cliente_actual = pesquisa_cliente_numero_cliente(lista_de_clientes, reserva_actual->reserva.n_cliente);
                 while (reserva_actual) {
                     elimina_reserva_numero_voo(lista_de_reservas, number_voo);
@@ -332,7 +318,6 @@ int main(int argc, char** argv) {
                     escreve_clientes("clientes", &lista_de_clientes, lista_de_clientes->cliente.n_cliente);
                     escreve_voos("voos", &lista_de_voos, lista_de_voos->voo.n_voo);
                     escreve_reservas("reservas", &lista_de_reservas, lista_de_reservas->reserva.n_cliente);
-
                 }
                 test = 0;
             } else if (opcao == 3) {
@@ -344,47 +329,39 @@ int main(int argc, char** argv) {
                 opcao = 8;
                 printf("\n   ******** GCC-Airlines ********\n\n   Gestao de Reservas - Criar/eliminar/verificar reservas\n\n");
                 printf("   1 - Criar Reserva;\n   2 - Eliminar Reserva;\n   3 - Visualizar reservas;\n   4 - Voltar ao menu anterior;\n   7 - Sair;\n\n   Opcao: ");
-                fgets(string_test, sizeof (string_test), stdin);
-                sscanf(string_test, "%d", &opcao);
+                le_int_teclado(&opcao, BUFSIZE);
             } while (opcao < 1 || opcao > 7 || opcao == 5 || opcao == 6);
 
             if (opcao == 1) {
                 printf("\n   Numero de voo( Para voltar ao menu anterior inserir -1): ");
-                fgets(string_test, sizeof (string_test), stdin);
-                sscanf(string_test, "%d", &number_voo);
-                List_v voo_actual = pesquisa_voo_numero_voo(lista_de_voos, number_voo);
+                le_int_teclado(&number_voo, BUFSIZE);
+                voo_actual = pesquisa_voo_numero_voo(lista_de_voos, number_voo);
                 if (voo_actual != NULL) {
                     if (voo_actual->voo.n_lugares_vagos != 0) {
                         printf("\n   Numero de cliente( Para voltar ao menu anterior inserir -1): ");
-                        fgets(string_test, sizeof (string_test), stdin);
-                        sscanf(string_test, "%d", &number_cliente);
+                        le_int_teclado(&number_cliente, BUFSIZE);
                         if (pesquisa_cliente_numero_cliente(lista_de_clientes, number_cliente)) {
                             if (verifica_reserva_repetida(lista_de_reservas, number_cliente, number_voo) == 0) {
                                 do {
                                     printf("\n   Dia da reserva: ");
-                                    fgets(string_test, sizeof (string_test), stdin);
-                                    sscanf(string_test, "%d", &dia_reserva);
+                                    le_int_teclado(&dia_reserva, BUFSIZE);
                                 } while (dia_reserva < 1 || dia_reserva > 31);
                                 do {
                                     printf("\n   Mes da reserva: ");
-                                    fgets(string_test, sizeof (string_test), stdin);
-                                    sscanf(string_test, "%d", &mes_reserva);
+                                    le_int_teclado(&mes_reserva, BUFSIZE);
                                 } while (mes_reserva < 1 || mes_reserva > 12);
                                 do {
                                     printf("\n   Ano da reserva( 2000-2100): ");
-                                    fgets(string_test, sizeof (string_test), stdin);
-                                    sscanf(string_test, "%d", &ano_reserva);
+                                    le_int_teclado(&ano_reserva, BUFSIZE);
                                 } while (ano_reserva < 2000 || ano_reserva > 2100);
                                 printf("\n   Tempo de marcacao da reserva\n");
                                 do {
                                     printf("\n      Hora( 0-23): ");
-                                    fgets(string_test, sizeof (string_test), stdin);
-                                    sscanf(string_test, "%d", &hora_reserva);
+                                    le_int_teclado(&hora_reserva, BUFSIZE);
                                 } while (hora_reserva < 0 || hora_reserva > 23);
                                 do {
                                     printf("\n      Minutos( 0-59): ");
-                                    fgets(string_test, sizeof (string_test), stdin);
-                                    sscanf(string_test, "%d", &minutos_reserva);
+                                    le_int_teclado(&minutos_reserva, BUFSIZE);
                                 } while (minutos_reserva < 0 || minutos_reserva > 59);
                                 if (data_test(&voo_actual, dia_reserva, mes_reserva, ano_reserva) == 0) {
                                     int i;
@@ -399,7 +376,7 @@ int main(int argc, char** argv) {
                                     insere_lista_reserva(lista_de_reservas, n_reserva, number_cliente, number_voo, dia_reserva, mes_reserva, ano_reserva, hora_reserva, minutos_reserva, lugar_voo);
                                     lista_de_reservas->reserva.n_cliente++;
                                     n_reserva++;
-                                    List_c cliente_actual = pesquisa_cliente_numero_cliente(lista_de_clientes, number_cliente);
+                                    cliente_actual = pesquisa_cliente_numero_cliente(lista_de_clientes, number_cliente);
                                     cliente_actual->cliente.n_voos_efectuados++;
 
                                     /* DEBUG
@@ -454,14 +431,13 @@ int main(int argc, char** argv) {
 
             } else if (opcao == 2) {
                 printf("\n   Numero de reserva( Para voltar ao menu anterior inserir -1): ");
-                fgets(string_test, sizeof (string_test), stdin);
-                sscanf(string_test, "%d", &number_reserva);
-                List_r reserva_actual = pesquisa_reserva_numero_reserva(lista_de_reservas, number_reserva);
-                List_c cliente_actual;
+                le_int_teclado(&number_reserva, BUFSIZE);
+                reserva_actual = pesquisa_reserva_numero_reserva(lista_de_reservas, number_reserva);
+                cliente_actual;
                 if (reserva_actual)cliente_actual = pesquisa_cliente_numero_cliente(lista_de_clientes, reserva_actual->reserva.n_cliente);
                 if (reserva_actual) {
                     cliente_actual->cliente.n_voos_efectuados--;
-                    List_v voo_actual = pesquisa_voo_numero_voo(lista_de_voos, reserva_actual->reserva.n_voo);
+                    voo_actual = pesquisa_voo_numero_voo(lista_de_voos, reserva_actual->reserva.n_voo);
                     voo_actual->voo.n_lugares_vagos++;
                     voo_actual->voo.lugares_vagos[ reserva_actual->reserva.n_lugar - 1] = 1;
                 }
@@ -502,7 +478,6 @@ int main(int argc, char** argv) {
                     escreve_clientes("clientes", &lista_de_clientes, lista_de_clientes->cliente.n_cliente);
                     escreve_voos("voos", &lista_de_voos, lista_de_voos->voo.n_voo);
                     escreve_reservas("reservas", &lista_de_reservas, lista_de_reservas->reserva.n_cliente);
-
                 }
                 test = 0;
 
@@ -517,8 +492,7 @@ int main(int argc, char** argv) {
                 printf("\n   ******** GCC-Airlines ********\n\n   Gestao de Reservas - Lista ordenada dos passageiros por nome\n\n");
                 printf("   1 - Visualizar lista ordenada de todos os passageiros;\n   2 - Visualizar lista ordenada de passageiros por voo;\n\
    3 - Voltar ao menu anterior;\n   7 - Sair;\n\n   Opcao: ");
-                fgets(string_test, sizeof (string_test), stdin);
-                sscanf(string_test, "%d", &opcao);
+                le_int_teclado(&opcao, BUFSIZE);
             } while (opcao < 1 || opcao > 7 || opcao == 4 || opcao == 5 || opcao == 6);
 
             if (opcao == 1) {
@@ -528,9 +502,8 @@ int main(int argc, char** argv) {
             } else if (opcao == 2) {
                 printf("\n   ******** GCC-Airlines ********\n\n   Gestao de Reservas - Lista ordenada dos passageiros por nome num voo\n\n");
                 printf("\n   Numero do voo( Para voltar ao menu anterior inserir -1): ");
-                fgets(string_test, sizeof (string_test), stdin);
-                sscanf(string_test, "%d", &number_voo);
-                List_v voo_actual = pesquisa_voo_numero_voo(lista_de_voos, number_voo);
+                le_int_teclado(&number_voo, BUFSIZE);
+                voo_actual = pesquisa_voo_numero_voo(lista_de_voos, number_voo);
                 if (voo_actual) {
                     imprime_nome_voo(lista_de_reservas, lista_de_clientes, voo_actual);
                 } else
@@ -546,12 +519,10 @@ int main(int argc, char** argv) {
             opcao = 8;
             printf("\n   ******** GCC-Airlines ********\n\n   Gestao de Reservas - Verificar se um passageiro tem reserva num voo\n\n");
             printf("\n   Numero de cliente( Para voltar ao menu anterior inserir -1): ");
-            fgets(string_test, sizeof (string_test), stdin);
-            sscanf(string_test, "%d", &number_cliente);
+            le_int_teclado(&number_cliente, BUFSIZE);
             if (pesquisa_cliente_numero_cliente(lista_de_clientes, number_cliente)) {
                 printf("\n   Numero de voo( Para voltar ao menu anterior inserir -1): ");
-                fgets(string_test, sizeof (string_test), stdin);
-                sscanf(string_test, "%d", &number_voo);
+                le_int_teclado(&number_voo, BUFSIZE);
                 if (pesquisa_voo_numero_voo(lista_de_voos, number_voo)) {
                     verifica_reserva_cliente(lista_de_reservas, number_cliente, number_voo);
                 } else {
@@ -602,5 +573,3 @@ int main(int argc, char** argv) {
 
     return EXIT_SUCCESS;
 }
-
-
