@@ -9,7 +9,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "lista_ligada_dupla.h"
+#include "structs_and_functions.h"
 
 #define BUFSIZE 32
 

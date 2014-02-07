@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "lista_ligada_dupla.h"
+#include "structs_and_functions.h"
 
 List_c cria_lista_cliente(void) {
     List_c aux;
@@ -745,6 +745,7 @@ int data_test(List_v *actual, int dia, int mes, int ano) {
 }
 
 // READ INT FROM KEYBOARD
+
 int le_int_teclado(int* num, int tamanho) {
     char* p;
     char linha[tamanho];
@@ -759,6 +760,7 @@ int le_int_teclado(int* num, int tamanho) {
 }
 
 // READ STRING FROM KEYBOARD
+
 int le_string_teclado(char* str, int tamanho) {
     char* p;
     char linha[tamanho];
@@ -771,6 +773,3 @@ int le_string_teclado(char* str, int tamanho) {
     } else
         return EXIT_FAILURE;
 }
-
-
-
