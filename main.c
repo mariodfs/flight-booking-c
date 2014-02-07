@@ -433,7 +433,6 @@ int main(int argc, char** argv) {
                 printf("\n   Numero de reserva( Para voltar ao menu anterior inserir -1): ");
                 le_int_teclado(&number_reserva, BUFSIZE);
                 reserva_actual = pesquisa_reserva_numero_reserva(lista_de_reservas, number_reserva);
-                cliente_actual;
                 if (reserva_actual)cliente_actual = pesquisa_cliente_numero_cliente(lista_de_clientes, reserva_actual->reserva.n_cliente);
                 if (reserva_actual) {
                     cliente_actual->cliente.n_voos_efectuados--;
