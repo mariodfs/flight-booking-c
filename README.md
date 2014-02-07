@@ -1,7 +1,7 @@
 flight-booking-c
 ================
 
-- Programming language: C (C99).
+- Programming language: C
 
 This is an application which manages the flight reservations of an airline company.
 
