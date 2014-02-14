@@ -213,7 +213,7 @@ void elimina_reserva_numero_voo(List_r lista, int chave) {
     }
 }
 
-void insere_lista_cliente(List_c lista, int chave, char nome[], char morada[], char e_mail[], unsigned long long telefone) {
+void insere_lista_cliente(List_c lista, int chave, char nome[], char morada[], char e_mail[], unsigned long telefone) {
     List_c no;
     List_c ant, inutil;
     no = (List_c) malloc(sizeof (List_node_cliente));
@@ -362,7 +362,7 @@ void imprime_lista_clientes(List_c lista) {
         printf("   Nome do cliente: %s\n", l->cliente.nome);
         printf("   Numero de cliente: %d\n", l->cliente.n_cliente);
         printf("   Numero de voos efectuados: %d\n", l->cliente.n_voos_efectuados);
-        printf("   Numero de telefone: %llu\n", l->cliente.telefone);
+        printf("   Numero de telefone: %lu\n", l->cliente.telefone);
         printf("   Morada do cliente: %s\n", l->cliente.morada);
         printf("   E-mail do cliente: %s\n", l->cliente.e_mail);
         l = l->next;
@@ -744,6 +744,24 @@ int data_test(List_v *actual, int dia, int mes, int ano) {
     return 0;
 }
 
+// READ UNSIGNED LONG FROM KEYBOARD
+
+int le_unsig_int_teclado(unsigned long* num, int tamanho) {
+    char* p;
+    char linha[tamanho];
+
+    if (fgets(linha, tamanho, stdin) != NULL) {
+        if ((p = strchr(linha, '\n')) != NULL) {
+            *p = '\0';
+        } else
+            dump_line(stdin);
+
+        sscanf(linha, "%lu", num);
+        return EXIT_SUCCESS;
+    } else
+        return EXIT_FAILURE;
+}
+
 // READ INT FROM KEYBOARD
 
 int le_int_teclado(int* num, int tamanho) {
@@ -751,8 +769,11 @@ int le_int_teclado(int* num, int tamanho) {
     char linha[tamanho];
 
     if (fgets(linha, tamanho, stdin) != NULL) {
-        if ((p = strchr(linha, '\n')) != NULL)
+        if ((p = strchr(linha, '\n')) != NULL) {
             *p = '\0';
+        } else
+            dump_line(stdin);
+
         sscanf(linha, "%d", num);
         return EXIT_SUCCESS;
     } else
@@ -766,10 +787,18 @@ int le_string_teclado(char* str, int tamanho) {
     char linha[tamanho];
 
     if (fgets(linha, tamanho, stdin) != NULL) {
-        if ((p = strchr(linha, '\n')) != NULL)
+        if ((p = strchr(linha, '\n')) != NULL) {
             *p = '\0';
+        } else
+            dump_line(stdin);
+
         strcpy(str, linha);
         return EXIT_SUCCESS;
     } else
         return EXIT_FAILURE;
+}
+
+void dump_line(FILE *fp) {
+    int ch;
+    while ((ch = fgetc(fp)) != EOF && ch != '\n');
 }

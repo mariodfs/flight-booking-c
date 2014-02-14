@@ -8,10 +8,14 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <limits.h>
 
 #include "structs_and_functions.h"
 
 #define BUFSIZE 32
+#define MAX_TELEF 1e19
+
+//#define DEBUG
 
 int main(int argc, char** argv) {
 
@@ -30,7 +34,7 @@ int main(int argc, char** argv) {
     char destino[25];
     char cidadeC[25] = "Cernache";
     char cidadeL[25] = "Lisboa";
-    unsigned long long telefone;
+    unsigned long telefone;
     int number_cliente;
     int number_voo;
     int number_reserva;
@@ -53,41 +57,36 @@ int main(int argc, char** argv) {
     int n_cliente = 1;
     int n_voo = 1;
     int n_reserva = 1;
+    int lidos;
     //
 
-    /*
-     * DEBUG VERSION - INITIAL DATA READ
-     * 
+#ifdef DEBUG
     printf("\n   ******** GCC-Airlines ********\n\n   Gestao de Reservas - Iniciacao do programa\n\n");
-
-    int lidos;
+#endif
     lidos = le_contadores(&n_cliente, &n_voo, &n_reserva);
+#ifdef DEBUG
     if (lidos == -1) printf("\n   Ficheiro de contadores nao lido.\n   Provavel primeira utilizacao do programa ou erro na leitura.\n");
     else if (lidos == 1) printf("\n   Ficheiro de contadores lido com sucesso.\n");
-
+#endif
     lidos = le_clientes("clientes", lista_de_clientes);
+#ifdef DEBUG
     if (lidos == -1) printf("\n   Ficheiro de clientes nao lido.\n   Provavel primeira utilizacao do programa ou erro na leitura.\n");
     else if (lidos == 0)printf("\n   Ficheiro de clientes lido com erro na leitura dos valores\n   ou clientes nao existentes.\n");
     else printf("\n   Ficheiro de clientes lido com sucesso.\n");
-
+#endif
     lidos = le_voos("voos", lista_de_voos);
+#ifdef DEBUG
     if (lidos == -1) printf("\n   Ficheiro de voos nao lido.\n   Provavel primeira utilizacao do programa ou erro na leitura.\n");
     else if (lidos == 0)printf("\n   Ficheiro de voos lido com erro na leitura dos valores\n   ou voos nao existentes.\n");
     else printf("\n   Ficheiro de voos lido com sucesso.\n");
-
+#endif
     lidos = le_reservas("reservas", lista_de_reservas);
+#ifdef DEBUG
     if (lidos == -1) printf("\n   Ficheiro de reservas nao lido.\n   Provavel primeira utilizacao do programa ou erro na leitura.\n\n   ");
     else if (lidos == 0)printf("\n   Ficheiro de reservas lido com erro na leitura dos valores\n   ou reservas nao existentes.\n\n   ");
     else printf("\n   Ficheiro de reservas lido com sucesso.\n\n   ");
-
     printf("\n\n   Programa considerado iniciado com sucesso.\n\n\n   ");
-     */
-
-    // INITIAL DATA READ
-    le_contadores(&n_cliente, &n_voo, &n_reserva);
-    le_clientes("clientes", lista_de_clientes);
-    le_voos("voos", lista_de_voos);
-    le_reservas("reservas", lista_de_reservas);
+#endif
 
     do {
         if (lista_de_clientes->cliente.n_cliente == 0) n_cliente = 1;
@@ -118,31 +117,29 @@ int main(int argc, char** argv) {
                 le_string_teclado(morada, BUFSIZE);
                 printf("\n   E_mail do cliente ( max. %lu caracteres): ", sizeof (string_test));
                 le_string_teclado(e_mail, BUFSIZE);
-                printf("\n   Telefone do cliente: ");
-                fgets(string_test, sizeof (string_test), stdin);
-                sscanf(string_test, "%llu", &telefone);
+                do {
+                    printf("\n   Telefone do cliente (max. 19 algarismos): ");
+                    le_unsig_int_teclado(&telefone, BUFSIZE);
+                } while (telefone < 1 || telefone >= MAX_TELEF);
                 insere_lista_cliente(lista_de_clientes, n_cliente, nome, morada, e_mail, telefone);
                 lista_de_clientes->cliente.n_cliente++;
                 n_cliente++;
 
-                /* DEBUG
                 escritos = escreve_contadores(n_cliente, n_voo, n_reserva);
+#ifdef DEBUG
                 if (escritos == -1) {
                     printf("\n   Ficheiro de contadores nao escrito.\n");
                     return -1;
                 } else if (escritos == 1)printf("\n   Ficheiro de contadores escrito com sucesso.\n");
-
+#endif
                 escritos = escreve_clientes("clientes", &lista_de_clientes, lista_de_clientes->cliente.n_cliente);
+#ifdef DEBUG
                 if (escritos == -1) {
                     printf("\n   Ficheiro de clientes nao escrito.\n");
                     return -1;
                 } else if (escritos == 0)printf("\n   Ficheiro de clientes escrito com erro nos valores\n   ou clientes nao existentes.\n");
                 else printf("\n   Ficheiro de clientes escrito com sucesso.\n");
-                 */
-
-                // DATA WRITE
-                escreve_contadores(n_cliente, n_voo, n_reserva);
-                escreve_clientes("clientes", &lista_de_clientes, lista_de_clientes->cliente.n_cliente);
+#endif
 
             } else if (opcao == 2) {
                 printf("\n   Numero do cliente( Para voltar ao menu anterior inserir -1): ");
@@ -160,40 +157,38 @@ int main(int argc, char** argv) {
                 if (test) {
                     lista_de_clientes->cliente.n_cliente--;
 
-                    /* DEBUG
                     escritos = escreve_contadores(n_cliente, n_voo, n_reserva);
+#ifdef DEBUG
                     if (escritos == -1) {
                         printf("\n   Ficheiro de contadores nao escrito.\n");
                         return -1;
                     } else if (escritos == 1)printf("\n   Ficheiro de contadores escrito com sucesso.\n");
-
+#endif
                     escritos = escreve_clientes("clientes", &lista_de_clientes, lista_de_clientes->cliente.n_cliente);
+#ifdef DEBUG
                     if (escritos == -1) {
                         printf("\n   Ficheiro de clientes nao escrito.\n");
                         return -1;
                     } else if (escritos == 0)printf("\n   Ficheiro de clientes escrito com erro nos valores\n   ou clientes nao existentes.\n");
                     else printf("\n   Ficheiro de clientes escrito com sucesso.\n");
-
+#endif
                     escritos = escreve_voos("voos", &lista_de_voos, lista_de_voos->voo.n_voo);
+#ifdef DEBUG
                     if (escritos == -1) {
                         printf("\n   Ficheiro de voos nao escrito.\n");
                         return -1;
                     } else if (escritos == 0)printf("\n   Ficheiro de voos escrito com erro nos valores\n   ou voos nao existentes.\n");
                     else printf("\n   Ficheiro de voos escrito com sucesso.\n");
-
+#endif
                     escritos = escreve_reservas("reservas", &lista_de_reservas, lista_de_reservas->reserva.n_cliente);
+#ifdef DEBUG
                     if (escritos == -1) {
                         printf("\n   Ficheiro de reservas nao escrito.\n");
                         return -1;
                     } else if (escritos == 0)printf("\n   Ficheiro de reservas escrito com erro nos valores\n   ou reservas nao existentes.\n");
                     else printf("\n   Ficheiro de reservas escrito com sucesso.\n");
-                     */
+#endif
 
-                    // DATA WRITE
-                    escreve_contadores(n_cliente, n_voo, n_reserva);
-                    escreve_clientes("clientes", &lista_de_clientes, lista_de_clientes->cliente.n_cliente);
-                    escreve_voos("voos", &lista_de_voos, lista_de_voos->voo.n_voo);
-                    escreve_reservas("reservas", &lista_de_reservas, lista_de_reservas->reserva.n_cliente);
                 }
                 test = 0;
 
@@ -247,23 +242,21 @@ int main(int argc, char** argv) {
                 lista_de_voos->voo.n_voo++;
                 n_voo++;
 
-                /* DEBUG
                 escritos = escreve_contadores(n_cliente, n_voo, n_reserva);
+#ifdef DEBUG
                 if (escritos == -1) {
                     printf("\n   Ficheiro de contadores nao escrito.\n");
                     return -1;
                 } else if (escritos == 1)printf("\n   Ficheiro de contadores escrito com sucesso.\n");
-
+#endif
                 escritos = escreve_voos("voos", &lista_de_voos, lista_de_voos->voo.n_voo);
+#ifdef DEBUG      
                 if (escritos == -1) {
                     printf("\n   Ficheiro de voos nao escrito.\n");
                     return -1;
                 } else if (escritos == 0)printf("\n   Ficheiro de voos escrito com erro nos valores\n   ou voos nao existentes.\n");
                 else printf("\n   Ficheiro de voos escrito com sucesso.\n");
-                 */
-
-                escreve_contadores(n_cliente, n_voo, n_reserva);
-                escreve_voos("voos", &lista_de_voos, lista_de_voos->voo.n_voo);
+#endif                 
 
             } else if (opcao == 2) {
                 printf("\n   Numero do voo( Para voltar ao menu anterior inserir -1): ");
@@ -285,39 +278,38 @@ int main(int argc, char** argv) {
                 if (test) {
                     lista_de_voos->voo.n_voo--;
 
-                    /* DEBUG
                     escritos = escreve_contadores(n_cliente, n_voo, n_reserva);
+#ifdef DEBUG
                     if (escritos == -1) {
                         printf("\n   Ficheiro de contadores nao escrito.\n");
                         return -1;
                     } else if (escritos == 1)printf("\n   Ficheiro de contadores escrito com sucesso.\n");
-
+#endif            
                     escritos = escreve_clientes("clientes", &lista_de_clientes, lista_de_clientes->cliente.n_cliente);
+#ifdef DEBUG
                     if (escritos == -1) {
                         printf("\n   Ficheiro de clientes nao escrito.\n");
                         return -1;
                     } else if (escritos == 0)printf("\n   Ficheiro de clientes escrito com erro nos valores\n   ou clientes nao existentes.\n");
                     else printf("\n   Ficheiro de clientes escrito com sucesso.\n");
-
+#endif
                     escritos = escreve_voos("voos", &lista_de_voos, lista_de_voos->voo.n_voo);
+#ifdef DEBUG      
                     if (escritos == -1) {
                         printf("\n   Ficheiro de voos nao escrito.\n");
                         return -1;
                     } else if (escritos == 0)printf("\n   Ficheiro de voos escrito com erro nos valores\n   ou voos nao existentes.\n");
                     else printf("\n   Ficheiro de voos escrito com sucesso.\n");
-
+#endif
                     escritos = escreve_reservas("reservas", &lista_de_reservas, lista_de_reservas->reserva.n_cliente);
+#ifdef DEBUG      
                     if (escritos == -1) {
                         printf("\n   Ficheiro de reservas nao escrito.\n");
                         return -1;
                     } else if (escritos == 0)printf("\n   Ficheiro de reservas escrito com erro nos valores\n   ou reservas nao existentes.\n");
                     else printf("\n   Ficheiro de reservas escrito com sucesso.\n");
-                     */
+#endif
 
-                    escreve_contadores(n_cliente, n_voo, n_reserva);
-                    escreve_clientes("clientes", &lista_de_clientes, lista_de_clientes->cliente.n_cliente);
-                    escreve_voos("voos", &lista_de_voos, lista_de_voos->voo.n_voo);
-                    escreve_reservas("reservas", &lista_de_reservas, lista_de_reservas->reserva.n_cliente);
                 }
                 test = 0;
             } else if (opcao == 3) {
@@ -379,39 +371,37 @@ int main(int argc, char** argv) {
                                     cliente_actual = pesquisa_cliente_numero_cliente(lista_de_clientes, number_cliente);
                                     cliente_actual->cliente.n_voos_efectuados++;
 
-                                    /* DEBUG
                                     escritos = escreve_contadores(n_cliente, n_voo, n_reserva);
+#ifdef DEBUG
                                     if (escritos == -1) {
                                         printf("\n   Ficheiro de contadores nao escrito.\n");
                                         return -1;
                                     } else if (escritos == 1)printf("\n   Ficheiro de contadores escrito com sucesso.\n");
-
+#endif            
                                     escritos = escreve_clientes("clientes", &lista_de_clientes, lista_de_clientes->cliente.n_cliente);
+#ifdef DEBUG
                                     if (escritos == -1) {
                                         printf("\n   Ficheiro de clientes nao escrito.\n");
                                         return -1;
                                     } else if (escritos == 0)printf("\n   Ficheiro de clientes escrito com erro nos valores\n   ou clientes nao existentes.\n");
                                     else printf("\n   Ficheiro de clientes escrito com sucesso.\n");
-
+#endif
                                     escritos = escreve_voos("voos", &lista_de_voos, lista_de_voos->voo.n_voo);
+#ifdef DEBUG      
                                     if (escritos == -1) {
                                         printf("\n   Ficheiro de voos nao escrito.\n");
                                         return -1;
                                     } else if (escritos == 0)printf("\n   Ficheiro de voos escrito com erro nos valores\n   ou voos nao existentes.\n");
                                     else printf("\n   Ficheiro de voos escrito com sucesso.\n");
-
+#endif
                                     escritos = escreve_reservas("reservas", &lista_de_reservas, lista_de_reservas->reserva.n_cliente);
+#ifdef DEBUG      
                                     if (escritos == -1) {
                                         printf("\n   Ficheiro de reservas nao escrito.\n");
                                         return -1;
                                     } else if (escritos == 0)printf("\n   Ficheiro de reservas escrito com erro nos valores\n   ou reservas nao existentes.\n");
                                     else printf("\n   Ficheiro de reservas escrito com sucesso.\n");
-                                     */
-
-                                    escreve_contadores(n_cliente, n_voo, n_reserva);
-                                    escreve_clientes("clientes", &lista_de_clientes, lista_de_clientes->cliente.n_cliente);
-                                    escreve_voos("voos", &lista_de_voos, lista_de_voos->voo.n_voo);
-                                    escreve_reservas("reservas", &lista_de_reservas, lista_de_reservas->reserva.n_cliente);
+#endif
 
                                 } else {
                                     printf("\n\n   Reserva nao efectuada. Data introduzida ultrapassa a data de partida do voo.\n\n   ");
@@ -444,39 +434,38 @@ int main(int argc, char** argv) {
                 if (test) {
                     lista_de_reservas->reserva.n_cliente--;
 
-                    /* DEBUG
-                escritos = escreve_contadores(n_cliente, n_voo, n_reserva);
-                if (escritos == -1) {
-                    printf("\n   Ficheiro de contadores nao escrito.\n");
-                    return -1;
-                } else if (escritos == 1)printf("\n   Ficheiro de contadores escrito com sucesso.\n");
+                    escritos = escreve_contadores(n_cliente, n_voo, n_reserva);
+#ifdef DEBUG
+                    if (escritos == -1) {
+                        printf("\n   Ficheiro de contadores nao escrito.\n");
+                        return -1;
+                    } else if (escritos == 1)printf("\n   Ficheiro de contadores escrito com sucesso.\n");
+#endif            
+                    escritos = escreve_clientes("clientes", &lista_de_clientes, lista_de_clientes->cliente.n_cliente);
+#ifdef DEBUG
+                    if (escritos == -1) {
+                        printf("\n   Ficheiro de clientes nao escrito.\n");
+                        return -1;
+                    } else if (escritos == 0)printf("\n   Ficheiro de clientes escrito com erro nos valores\n   ou clientes nao existentes.\n");
+                    else printf("\n   Ficheiro de clientes escrito com sucesso.\n");
+#endif
+                    escritos = escreve_voos("voos", &lista_de_voos, lista_de_voos->voo.n_voo);
+#ifdef DEBUG      
+                    if (escritos == -1) {
+                        printf("\n   Ficheiro de voos nao escrito.\n");
+                        return -1;
+                    } else if (escritos == 0)printf("\n   Ficheiro de voos escrito com erro nos valores\n   ou voos nao existentes.\n");
+                    else printf("\n   Ficheiro de voos escrito com sucesso.\n");
+#endif
+                    escritos = escreve_reservas("reservas", &lista_de_reservas, lista_de_reservas->reserva.n_cliente);
+#ifdef DEBUG      
+                    if (escritos == -1) {
+                        printf("\n   Ficheiro de reservas nao escrito.\n");
+                        return -1;
+                    } else if (escritos == 0)printf("\n   Ficheiro de reservas escrito com erro nos valores\n   ou reservas nao existentes.\n");
+                    else printf("\n   Ficheiro de reservas escrito com sucesso.\n");
+#endif
 
-                escritos = escreve_clientes("clientes", &lista_de_clientes, lista_de_clientes->cliente.n_cliente);
-                if (escritos == -1) {
-                    printf("\n   Ficheiro de clientes nao escrito.\n");
-                    return -1;
-                } else if (escritos == 0)printf("\n   Ficheiro de clientes escrito com erro nos valores\n   ou clientes nao existentes.\n");
-                else printf("\n   Ficheiro de clientes escrito com sucesso.\n");
-
-                escritos = escreve_voos("voos", &lista_de_voos, lista_de_voos->voo.n_voo);
-                if (escritos == -1) {
-                    printf("\n   Ficheiro de voos nao escrito.\n");
-                    return -1;
-                } else if (escritos == 0)printf("\n   Ficheiro de voos escrito com erro nos valores\n   ou voos nao existentes.\n");
-                else printf("\n   Ficheiro de voos escrito com sucesso.\n");
-
-                escritos = escreve_reservas("reservas", &lista_de_reservas, lista_de_reservas->reserva.n_cliente);
-                if (escritos == -1) {
-                    printf("\n   Ficheiro de reservas nao escrito.\n");
-                    return -1;
-                } else if (escritos == 0)printf("\n   Ficheiro de reservas escrito com erro nos valores\n   ou reservas nao existentes.\n");
-                else printf("\n   Ficheiro de reservas escrito com sucesso.\n");
-                     */
-
-                    escreve_contadores(n_cliente, n_voo, n_reserva);
-                    escreve_clientes("clientes", &lista_de_clientes, lista_de_clientes->cliente.n_cliente);
-                    escreve_voos("voos", &lista_de_voos, lista_de_voos->voo.n_voo);
-                    escreve_reservas("reservas", &lista_de_reservas, lista_de_reservas->reserva.n_cliente);
                 }
                 test = 0;
 
@@ -532,37 +521,6 @@ int main(int argc, char** argv) {
             }
         }
     } while (opcao != 7);
-
-    /* DEBUG
-    printf("\n   ******** GCC-Airlines ********\n\n   Gestao de Reservas - Encerramento do programa\n\n");
-
-    escritos = escreve_contadores(n_cliente, n_voo, n_reserva);
-    if (escritos == -1) {
-        printf("\n   Ficheiro de contadores nao escrito.\n");
-        return -1;
-    } else if (escritos == 1)printf("\n   Ficheiro de contadores escrito com sucesso.\n");
-
-    escritos = escreve_clientes("clientes", &lista_de_clientes, lista_de_clientes->cliente.n_cliente);
-    if (escritos == -1) {
-        printf("\n   Ficheiro de clientes nao escrito.\n");
-        return -1;
-    } else if (escritos == 0)printf("\n   Ficheiro de clientes escrito com erro nos valores\n   ou clientes nao existentes.\n");
-    else printf("\n   Ficheiro de clientes escrito com sucesso.\n");
-
-    escritos = escreve_voos("voos", &lista_de_voos, lista_de_voos->voo.n_voo);
-    if (escritos == -1) {
-        printf("\n   Ficheiro de voos nao escrito.\n");
-        return -1;
-    } else if (escritos == 0)printf("\n   Ficheiro de voos escrito com erro nos valores\n   ou voos nao existentes.\n");
-    else printf("\n   Ficheiro de voos escrito com sucesso.\n");
-
-    escritos = escreve_reservas("reservas", &lista_de_reservas, lista_de_reservas->reserva.n_cliente);
-    if (escritos == -1) {
-        printf("\n   Ficheiro de reservas nao escrito.\n");
-        return -1;
-    } else if (escritos == 0)printf("\n   Ficheiro de reservas escrito com erro nos valores\n   ou reservas nao existentes.\n");
-    else printf("\n   Ficheiro de reservas escrito com sucesso.\n");
-     */
 
     destroi_lista_c(lista_de_clientes);
     destroi_lista_v(lista_de_voos);

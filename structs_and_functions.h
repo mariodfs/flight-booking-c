@@ -21,7 +21,7 @@ typedef struct lnode_r List_node_reserva;
 struct cliente {
     int n_cliente;
     int n_voos_efectuados;
-    unsigned long long telefone;
+    unsigned long telefone;
     char nome[33];
     char morada[33];
     char e_mail[33];
@@ -93,7 +93,7 @@ int elimina_reserva_numero_reserva(List_r lista, int chave);
 void elimina_reserva_numero_cliente(List_r lista, int chave);
 void elimina_reserva_numero_voo(List_r lista, int chave);
 
-void insere_lista_cliente(List_c lista, int chave, char nome[], char morada[], char e_mail[], unsigned long long telefone);
+void insere_lista_cliente(List_c lista, int chave, char nome[], char morada[], char e_mail[], unsigned long telefone);
 void insere_lista_voo(List_v lista, int chave, int dia_voo, int mes_voo, int ano_voo, int hora_voo, int minutos_voo, char origem[], char destino[]);
 void insere_lista_reserva(List_r lista, int chave, int n_cliente, int n_voo, int dia_reserva, int mes_reserva, int ano_reserva, int hora_reserva, int minutos_reserva, int lugar_voo);
 
@@ -128,8 +128,10 @@ void insertion_sort(Cliente *vect[], int n);
 int quick_sort(Cliente* x[], int li, int ls);
 
 int data_test(List_v *actual, int dia, int mes, int ano);
+int le_unsig_int_teclado(unsigned long* num, int tamanho);
 int le_int_teclado(int* num, int tamanho);
 int le_string_teclado(char* str, int tamanho);
+void dump_line(FILE *fp);
 
 #endif	/* LISTA_LIGADA_DUPLA_H */
 
